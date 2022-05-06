@@ -1,0 +1,33 @@
+import json
+import pymysql
+import boto3
+
+def lambda_handler(event, context):
+    
+    # TODO implement
+    print(event)
+    host= 'database-1.ccn4dbaiqgls.us-east-1.rds.amazonaws.com'
+    port = 3306
+    user = 'admin'
+    password = 'Vamsi243'
+    conn = pymysql.connect(
+        host= host, #endpoint link
+        port = port, # 3306
+        user = user, # admin
+        password = password, #Vamsi243        
+        )
+    sns_client=boto3.client('sns')
+    cur =conn.cursor()
+    cur.execute('SELECT count(*) FROM user_db.user_details')
+    account_count = cur.fetchone()
+    z=int(account_count[0])
+    if z<10 and z>=6:
+        print("6 or more users registed for your account")
+        sns_client.publish(TopicArn='arn:aws:sns:us-east-1:994458558272:userCount',Message='Congrats!6 or more users registered for your portal',Subject='User count update')
+    elif z==5:
+        print("5 users registed for your account")
+        sns_client.publish(TopicArn='arn:aws:sns:us-east-1:994458558272:userCount',Message='Congrats!5 users registered for your portal',Subject='User count update')
+    elif z<15 and z>=10:
+        print("10 more users registed for your account")
+        sns_client.publish(TopicArn='arn:aws:sns:us-east-1:994458558272:userCount',Message='Congrats!10 or more users registered for your portal',Subject='User count update')
+   
